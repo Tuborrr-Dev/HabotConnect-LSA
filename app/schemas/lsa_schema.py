@@ -1,6 +1,7 @@
 from marshmallow import Schema, fields, validate
 
 
+# created this schema to be used for searching for LSAs based on their skills and experience
 class SkillNameSchema(Schema):
     name = fields.String()
 
@@ -15,7 +16,11 @@ class LSASearchSchema(Schema):
 class LSAResponseSchema(Schema):
     id = fields.Integer(dump_only=True)
     full_name = fields.String()
+    # created hourly_rate and years_experience to be included in the response schema for LSA search results
     hourly_rate = fields.Decimal(as_string=True, places=2)
     years_experience = fields.Integer()
     is_available = fields.Boolean()
     skills = fields.List(fields.Nested(SkillNameSchema))
+
+
+# the above schema is used to return the LSA search results in a paginated format
