@@ -31,7 +31,6 @@ class BookingResource(Resource):
                 }
             }, 400
 
-        # Only a logged-in Parent can create a booking (not an LSA)
         claims = get_jwt()
         if claims.get("type") != "parent":
             return {
@@ -42,7 +41,6 @@ class BookingResource(Resource):
                 }
             }, 403
 
-        # Ignore any parent_id the client sent — always use the logged-in user's own id
         data["parent_id"] = int(get_jwt_identity())
 
         try:
@@ -115,7 +113,6 @@ class BookingDetailResource(Resource):
                 "error": {"code": "NOT_FOUND", "message": str(exc), "details": {}}
             }, 404
 
-        # Only the parent or LSA on this specific booking can view it
         claims = get_jwt()
         user_id = int(get_jwt_identity())
         is_owner = (
