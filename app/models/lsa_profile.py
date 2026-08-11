@@ -15,6 +15,7 @@ class LSAProfile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(255), unique=True, nullable=False, index=True)
+    password_hash = db.Column(db.String(255), nullable=False)
     hourly_rate = db.Column(db.Numeric(8, 2), nullable=False)
     years_experience = db.Column(db.Integer, nullable=False, default=0)
     is_available = db.Column(db.Boolean, default=True, nullable=False)
