@@ -1,6 +1,7 @@
 import logging
 from flask import request
 from flask_restful import Resource
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from marshmallow import ValidationError
 from app.schemas.booking_schema import BookingCreateSchema, BookingResponseSchema
 from app.services.booking_service import (
@@ -16,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 class BookingResource(Resource):
 
+    @jwt_required()
     def post(self):
         schema = BookingCreateSchema()
         try:
@@ -28,6 +30,18 @@ class BookingResource(Resource):
                     "details": err.messages,
                 }
             }, 400
+
+        claims = get_jwt()
+        if claims.get("type") != "parent":
+            return {
+                "error": {
+                    "code": "FORBIDDEN",
+                    "message": "Only parents can create bookings",
+                    "details": {},
+                }
+            }, 403
+
+        data["parent_id"] = int(get_jwt_identity())
 
         try:
             booking = BookingService.create_booking(data)
@@ -67,32 +81,30 @@ class BookingResource(Resource):
 
         return BookingResponseSchema().dump(booking), 201
 
+    @jwt_required()
     def get(self):
-        # TEMPORARY: filters by query param until JWT auth is built.
-        # Once auth exists, parent_id/lsa_id should come from the
-        # authenticated user's token, not a client-supplied query param
-        # (otherwise anyone could view anyone else's bookings).
-        parent_id = request.args.get("parent_id", type=int)
-        lsa_id = request.args.get("lsa_id", type=int)
+        claims = get_jwt()
+        user_id = int(get_jwt_identity())
 
-        if parent_id:
-            bookings = BookingService.list_bookings_for_parent(parent_id)
-        elif lsa_id:
-            bookings = BookingService.list_bookings_for_lsa(lsa_id)
+        if claims.get("type") == "parent":
+            bookings = BookingService.list_bookings_for_parent(user_id)
+        elif claims.get("type") == "lsa":
+            bookings = BookingService.list_bookings_for_lsa(user_id)
         else:
             return {
                 "error": {
-                    "code": "VALIDATION_ERROR",
-                    "message": "parent_id or lsa_id query param required",
+                    "code": "FORBIDDEN",
+                    "message": "Unrecognized user type",
                     "details": {},
                 }
-            }, 400
+            }, 403
 
         return BookingResponseSchema(many=True).dump(bookings), 200
 
 
 class BookingDetailResource(Resource):
 
+    @jwt_required()
     def get(self, booking_id):
         try:
             booking = BookingService.get_booking(booking_id)
@@ -100,5 +112,19 @@ class BookingDetailResource(Resource):
             return {
                 "error": {"code": "NOT_FOUND", "message": str(exc), "details": {}}
             }, 404
+
+        claims = get_jwt()
+        user_id = int(get_jwt_identity())
+        is_owner = (
+            claims.get("type") == "parent" and booking.parent_id == user_id
+        ) or (claims.get("type") == "lsa" and booking.lsa_id == user_id)
+        if not is_owner:
+            return {
+                "error": {
+                    "code": "FORBIDDEN",
+                    "message": "You do not have access to this booking",
+                    "details": {},
+                }
+            }, 403
 
         return BookingResponseSchema().dump(booking), 200

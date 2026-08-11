@@ -5,6 +5,7 @@ class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True, "pool_recycle": 300}
+    JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "dev-jwt-secret")
 
 
 class DevelopmentConfig(Config):
@@ -23,6 +24,7 @@ class ProductionConfig(Config):
     DEBUG = False
     SECRET_KEY = os.environ["SECRET_KEY"]
     SQLALCHEMY_DATABASE_URI = os.environ["DATABASE_URL"]
+    JWT_SECRET_KEY = os.environ["JWT_SECRET_KEY"]
 
 
 config_by_name = {
