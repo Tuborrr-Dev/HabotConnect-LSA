@@ -1,14 +1,6 @@
 from datetime import datetime, timezone
 from app.extensions import db
 
-lsa_skills = db.Table(
-    "lsa_skills",
-    db.Column(
-        "lsa_profile_id", db.Integer, db.ForeignKey("lsa_profiles.id"), primary_key=True
-    ),
-    db.Column("skill_id", db.Integer, db.ForeignKey("skills.id"), primary_key=True),
-)
-
 
 class LSAProfile(db.Model):
     __tablename__ = "lsa_profiles"
@@ -23,6 +15,6 @@ class LSAProfile(db.Model):
         db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
     )
     skills = db.relationship(
-        "Skill", secondary=lsa_skills, back_populates="lsa_profiles"
+        "Skill", secondary="lsa_skills", back_populates="lsa_profiles"
     )
     bookings = db.relationship("Booking", back_populates="lsa", lazy="dynamic")
