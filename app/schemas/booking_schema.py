@@ -2,7 +2,6 @@ from datetime import date
 from marshmallow import Schema, fields, validate, validates_schema, ValidationError
 
 
-# this is the input schema for creating a booking, which validates the input data and ensures that all constraints are followed
 class BookingCreateSchema(Schema):
     parent_id = fields.Integer(required=True)
     lsa_id = fields.Integer(required=True)
@@ -10,7 +9,6 @@ class BookingCreateSchema(Schema):
     session_date = fields.Date(required=True)
     start_time = fields.Time(required=True, format="%H:%M")
     end_time = fields.Time(required=True, format="%H:%M")
-    # so the notes field is optional and if it is returned empty it doesnt break the schema, it will be returned as None if not provided
     notes = fields.String(
         validate=validate.Length(max=500), load_default=None, allow_none=True
     )
@@ -27,11 +25,13 @@ class BookingCreateSchema(Schema):
             )
 
 
-# this is the output schema for a booking, which defines how the booking data will be serialized and returned to the client
 class BookingResponseSchema(Schema):
     id = fields.Integer(dump_only=True)
     parent_id = fields.Integer()
+    # this is added to improve query optimization and reduce the number of queries needed to get the parent name
+    parent_name = fields.String(attribute="parent.full_name", dump_only=True)
     lsa_id = fields.Integer()
+    lsa_name = fields.String(attribute="lsa.full_name", dump_only=True)
     child_name = fields.String()
     session_date = fields.Date()
     start_time = fields.Time(format="%H:%M")
