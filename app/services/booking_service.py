@@ -80,15 +80,13 @@ class BookingService:
         db.session.add(booking)
         db.session.flush()
 
+        order = MockPaymentGateway.create_order(booking.id, amount)
         payment = Payment(
             booking_id=booking.id,
             amount=amount,
             status="pending",
-            provider_reference=(
-                f"pay_ref_{booking.id}_" f"{int(datetime.utcnow().timestamp())}"
-            ),
+            provider_reference=order["order_id"],
         )
-        db.session.add(payment)
 
         try:
             db.session.commit()
