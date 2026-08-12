@@ -1,7 +1,11 @@
+"""**Name:** Israel Adetubo
+**Contact:** israetubo@gmail.com"""
+
 from datetime import datetime, timezone
 from app.extensions import db
 
 
+# this is the payment model, which represents a payment made for a booking
 class Payment(db.Model):
     __tablename__ = "payments"
 
@@ -10,6 +14,7 @@ class Payment(db.Model):
         db.Integer, db.ForeignKey("bookings.id"), nullable=False, index=True
     )
     amount = db.Column(db.Numeric(8, 2), nullable=False)
+    # the status of the payment, which can be pending, completed, or failed but with a default of pending
     status = db.Column(db.String(20), nullable=False, default="pending")
     provider_reference = db.Column(
         db.String(100), unique=True, nullable=False, index=True

@@ -1,3 +1,6 @@
+"""**Name:** Israel Adetubo
+**Contact:** israetubo@gmail.com"""
+
 from flask import Flask
 from flask_restful import Api
 from app.config import config_by_name

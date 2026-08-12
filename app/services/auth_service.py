@@ -1,3 +1,6 @@
+"""**Name:** Israel Adetubo
+**Contact:** israetubo@gmail.com"""
+
 from flask_jwt_extended import create_access_token
 from app.extensions import db
 from app.models.parent import Parent

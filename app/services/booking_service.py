@@ -1,3 +1,6 @@
+"""**Name:** Israel Adetubo
+**Contact:** israetubo@gmail.com"""
+
 from decimal import Decimal
 from datetime import datetime
 from app.extensions import db
@@ -7,6 +10,8 @@ from app.models.parent import Parent
 from app.models.payment import Payment
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
+
+from app.services.payment_gateway import MockPaymentGateway
 
 
 class BookingServiceError(Exception):
@@ -80,6 +85,7 @@ class BookingService:
         db.session.add(booking)
         db.session.flush()
 
+        # Create a mock payment order with Razorpay and store the provider reference in the Payment model
         order = MockPaymentGateway.create_order(booking.id, amount)
         payment = Payment(
             booking_id=booking.id,
