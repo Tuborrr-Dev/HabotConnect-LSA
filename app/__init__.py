@@ -3,13 +3,16 @@
 
 from flask import Flask
 from flask_restful import Api
-from app.config import config_by_name
+from app.config import config_by_name, ProductionConfig
+
 from app.extensions import db, migrate, ma, jwt
 
 
 def create_app(config_name="default"):
     app = Flask(__name__)
     app.config.from_object(config_by_name[config_name])
+    if config_name == "production":
+        ProductionConfig.validate()
 
     db.init_app(app)
     migrate.init_app(app, db)
