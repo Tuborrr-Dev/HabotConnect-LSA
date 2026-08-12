@@ -1,3 +1,6 @@
+"""**Name:** Israel Adetubo
+**Contact:** israetubo@gmail.com"""
+
 from app.models.parent import Parent
 from app.models.lsa_profile import LSAProfile
 from app.models.skill import Skill

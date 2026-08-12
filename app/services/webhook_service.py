@@ -1,3 +1,6 @@
+"""**Name:** Israel Adetubo
+**Contact:** israetubo@gmail.com"""
+
 import hmac
 import hashlib
 import os
@@ -19,7 +22,7 @@ class UnknownPaymentError(WebhookServiceError):
 
 
 class WebhookService:
-    WEBHOOK_SECRET = os.environ["RAZORPAY_WEBHOOK_SECRET"]
+    WEBHOOK_SECRET = os.environ.get("RAZORPAY_WEBHOOK_SECRET", "dev-webhook-secret")
 
     @classmethod
     def verify_signature(cls, raw_payload, signature):

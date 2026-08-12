@@ -1,3 +1,6 @@
+"""**Name:** Israel Adetubo
+**Contact:** israetubo@gmail.com"""
+
 import os
 
 
@@ -22,9 +25,21 @@ class TestingConfig(Config):
 
 class ProductionConfig(Config):
     DEBUG = False
-    SECRET_KEY = os.environ["SECRET_KEY"]
-    SQLALCHEMY_DATABASE_URI = os.environ["DATABASE_URL"]
-    JWT_SECRET_KEY = os.environ["JWT_SECRET_KEY"]
+    SECRET_KEY = os.environ.get("SECRET_KEY")
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
+    JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY")
+
+    @staticmethod
+    def validate():
+        missing = [
+            name
+            for name in ("SECRET_KEY", "SQLALCHEMY_DATABASE_URI", "JWT_SECRET_KEY")
+            if not getattr(ProductionConfig, name)
+        ]
+        if missing:
+            raise RuntimeError(
+                f"Missing required production env vars: {', '.join(missing)}"
+            )
 
 
 config_by_name = {

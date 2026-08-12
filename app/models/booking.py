@@ -1,7 +1,11 @@
+"""**Name:** Israel Adetubo
+**Contact:** israetubo@gmail.com"""
+
 from datetime import datetime, timezone
 from app.extensions import db
 
 
+# the DB model for bookings, ensuring all contraints are followed
 class Booking(db.Model):
     __tablename__ = "bookings"
 

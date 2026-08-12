@@ -1,3 +1,6 @@
+"""**Name:** Israel Adetubo
+**Contact:** israetubo@gmail.com"""
+
 from flask import request
 from flask_restful import Resource
 from sqlalchemy.orm import selectinload

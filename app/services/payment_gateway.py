@@ -1,3 +1,6 @@
+"""**Name:** Israel Adetubo
+**Contact:** israetubo@gmail.com"""
+
 import uuid
 from decimal import Decimal
 
@@ -9,7 +12,7 @@ class MockPaymentGateway:
         POST https://api.razorpay.com/v1/orders
         {"amount": <paise>, "currency": "INR", "receipt": <booking_id>}
 
-    Here we simulate that response shape locally so the rest of the app
+    so here we are simulating the response shape locally so the rest of the app
     (booking_service, webhook_service) can be built and tested against
     the real Razorpay data shape without needing live API keys yet.
     """

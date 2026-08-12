@@ -1,10 +1,14 @@
+"""**Name:** Israel Adetubo
+**Contact:** israetubo@gmail.com"""
+
 from datetime import datetime, timezone
 from app.extensions import db
 
 
+# this is the parent model, which represents a parent user in the system
 class Parent(db.Model):
     __tablename__ = "parents"
-
+    # the primary key is the id column which is the same in allot of other models
     id = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(255), unique=True, nullable=False, index=True)

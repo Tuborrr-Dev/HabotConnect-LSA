@@ -1,3 +1,6 @@
+"""**Name:** Israel Adetubo
+**Contact:** israetubo@gmail.com"""
+
 from datetime import datetime, timezone
 from app.extensions import db
 
@@ -7,6 +10,7 @@ class LSAProfile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(255), unique=True, nullable=False, index=True)
+    # not requested but added password_hash to ensure the LSA also have logins to see thier bookings
     password_hash = db.Column(db.String(255), nullable=False)
     hourly_rate = db.Column(db.Numeric(8, 2), nullable=False)
     years_experience = db.Column(db.Integer, nullable=False, default=0)

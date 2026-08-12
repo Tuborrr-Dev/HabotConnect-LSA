@@ -1,3 +1,6 @@
+"""**Name:** Israel Adetubo
+**Contact:** israetubo@gmail.com"""
+
 import logging
 from flask import request
 from flask_restful import Resource
@@ -10,17 +13,9 @@ from app.services.webhook_service import (
 )
 from app.extensions import db
 
-<<<<<<< HEAD
 logger = logging.getLogger(__name__)
 
 
-=======
-# this is the logger for the PaymentWebhookResource class, which handles incoming webhooks from Razorpay for payment events. It is used to log any unexpected errors that occur during the processing of the webhook.
-logger = logging.getLogger(__name__)
-
-
-# This resource handles incoming webhooks from Razorpay for payment events. It verifies the signature of the webhook, checks for idempotency to avoid processing the same event multiple times, and updates the payment and booking statuses accordingly.
->>>>>>> origin/main
 class PaymentWebhookResource(Resource):
     def post(self):
         raw_payload = request.get_data()
