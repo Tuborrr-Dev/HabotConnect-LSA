@@ -8,10 +8,9 @@ from app.models.booking import Booking
 from app.models.lsa_profile import LSAProfile
 from app.models.parent import Parent
 from app.models.payment import Payment
+from app.services.payment_gateway import MockPaymentGateway
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
-
-from app.services.payment_gateway import MockPaymentGateway
 
 
 class BookingServiceError(Exception):
@@ -47,9 +46,6 @@ class BookingService:
         if not lsa.is_available:
             raise LSANotAvailableError(f"LSA {lsa.id} is not available")
 
-        # App-level overlap check with row lock which reduces race conditions;
-        # a database-level exclusion constraint will be added in migrations
-        # for full protection under concurrent requests)
         overlap = (
             Booking.query.filter(
                 Booking.lsa_id == lsa.id,
@@ -64,6 +60,7 @@ class BookingService:
 
         if overlap:
             raise SlotUnavailableError(
+                "This LSA already has a booking that overlaps the requested time window.",
                 conflicting_booking_id=overlap.id,
             )
 
@@ -85,7 +82,6 @@ class BookingService:
         db.session.add(booking)
         db.session.flush()
 
-        # Create a mock payment order with Razorpay and store the provider reference in the Payment model
         order = MockPaymentGateway.create_order(booking.id, amount)
         payment = Payment(
             booking_id=booking.id,
@@ -93,6 +89,7 @@ class BookingService:
             status="pending",
             provider_reference=order["order_id"],
         )
+        db.session.add(payment)
 
         try:
             db.session.commit()
@@ -100,8 +97,7 @@ class BookingService:
             db.session.rollback()
             if "no_overlapping_bookings" in str(exc):
                 raise SlotUnavailableError(
-                    "This LSA already has a booking that overlaps "
-                    "the requested time window."
+                    "This LSA already has a booking that overlaps the requested time window."
                 ) from exc
             raise
 

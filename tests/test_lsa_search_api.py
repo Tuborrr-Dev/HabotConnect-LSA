@@ -72,7 +72,7 @@ class TestLSASearchAPI(BaseTestCase):
 
         event.listen(Engine, "before_cursor_execute", before_cursor_execute)
         try:
-            response = self.client.get("/api/v1/lsas/search/")
+            response = self.client.get("/api/v1/lsas/search/?page_size=25")
             self.assertEqual(response.status_code, 200)
             data = json.loads(response.data)
             self.assertEqual(len(data["results"]), 25)
