@@ -95,6 +95,13 @@ API is available at `http://localhost:5000/api/v1`.
 - **Booking overlap prevention is currently application-level only** (a `SELECT ... FOR UPDATE` row lock checks for conflicting bookings before insert). Under concurrent requests for a slot with *no prior bookings*, this does not fully eliminate a race condition. A production-ready fix would add a PostgreSQL exclusion constraint (`EXCLUDE USING gist`, requiring the `btree_gist` extension) to enforce non-overlapping bookings at the database level — deferred here due to time constraints on this submission.
 - **Payment gateway integration is mocked** — `payment_gateway.py` simulates Razorpay's Order creation response rather than making a real API call, so the full flow can be built and tested without live API keys.
 
+## Design Choice: Flask (MVC) vs. Django (MVT)
+ 
+I chose Flask over Django because the brief explicitly asks for a "modular, lightweight RESTful API" 
+There's no server-rendered page, no admin console and no multi app monolith in scope, so Django's templating engine and `django.contrib.admin` would have been dead weight carried for features this service never touches. Flask let me build exactly the layers this problem needed and nothing more: 
+Flask-RESTful `Resource` classes handle routing and HTTP concerns only, Marshmallow schemas own request validation and response serialization as their own layer and a dedicated `services/` module (`booking_service.py`, `webhook_service.py`) holds the actual business logic overlap detection, idempotent webhook processing which is fully decoupled from both the HTTP layer and the ORM. 
+Django's MVT tends to collapse controller logic into the View by convention and with the admin site sitting right there, it's an easy crutch to lean on for CRUD instead of deliberately layering resource → schema → service → model for an API only booking/payment service like this one, Flask's unopinionated structure kept those boundaries explicit rather than implicit and that's why.
+
 ## Running Tests
 ```bash
 pytest
